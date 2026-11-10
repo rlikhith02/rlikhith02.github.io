@@ -1,0 +1,210 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quality gate · 3D simulation</title><link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>/* ===== factory scene ===== */
+  .factory{position:relative;height:520px;border-radius:28px;overflow:hidden;background:radial-gradient(ellipse at 50% 0%,#24304d,#0b1324 70%);box-shadow:0 30px 70px rgba(11,19,36,.25)}
+  .factory canvas{width:100%;height:100%;display:block;cursor:grab}
+  .factory canvas:active{cursor:grabbing}
+  .hud{position:absolute;left:18px;top:18px;display:grid;grid-template-columns:repeat(4,auto);gap:8px}
+  .hud div{background:rgba(11,19,36,.7);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:8px 12px;color:#fff;min-width:92px}
+  .hud span{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#9fabc4}
+  .hud b{font-family:Fraunces,serif;font-size:22px;color:var(--gold2)}
+  .flag{position:absolute;right:16px;bottom:14px;font-size:11px;letter-spacing:.12em;color:#8592ad}
+  .nogl{display:none;position:absolute;inset:0;place-items:center;color:#9fabc4}
+  @media (max-width:700px){ .factory{height:440px} .hud{grid-template-columns:repeat(2,auto);left:10px;top:10px} .hud div{min-width:80px;padding:6px 10px} .hud b{font-size:18px} }
+
+  
+  :root{--bg:#0b1324;--gold:#e5132b;--gold2:#ff8a94;--teal:#4fd1c5;--line:#2a2f3a;--sub:#aab4c9;--muted:#9fabc4;--ink:#f3efe8}
+  *{box-sizing:border-box} html,body{margin:0;height:100%;background:#0a0a0f;color:#f3efe8;font-family:Inter,system-ui,sans-serif;overflow:hidden}
+  .factory{height:100vh!important;border-radius:0!important;box-shadow:none!important}
+  .stage{height:calc(100vh - 92px)!important;border-radius:0!important}
+  .gcap{position:absolute;left:0;right:0;bottom:0;margin:0!important;border-radius:0!important;background:rgba(10,10,15,.92)!important;border:0!important;border-top:1px solid rgba(255,255,255,.08)!important;color:#f3efe8;padding:12px 16px!important}
+  .gcap p{color:#aab4c9!important}.gcap b,.gnum{color:#ff8a94!important}.gcap .thesis{color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-bottom:2px solid #e5132b}
+</style></head><body>
+<div class="factory">
+      <canvas id="fab" aria-label="3D simulation of a robot arm removing defective parts from a conveyor after an AI vision inspection"></canvas>
+      <div class="hud">
+        <div><span>Inspected</span><b id="kIn">0</b></div>
+        <div><span>Passed</span><b id="kOk">0</b></div>
+        <div><span>Rejected</span><b id="kNg">0</b></div>
+        <div><span>First-pass yield</span><b id="kY">–</b></div>
+      </div>
+      <div class="flag">SIMULATION · illustrative data</div>
+      <div class="nogl" id="nogl">3D view not supported on this device.</div>
+    </div>
+<script src="three.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const RM = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+</script>
+<script>
+/* ===== 3D: robot quality gate ===== */
+(function(){
+  const cv=$("fab"); if(!cv) return;
+  if(!window.THREE){ $("nogl").style.display="grid"; return; }
+  let r; try{ r=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true}); }catch(e){ $("nogl").style.display="grid"; return; }
+  r.setPixelRatio(Math.min(devicePixelRatio,2)); r.outputEncoding=THREE.sRGBEncoding; r.toneMapping=THREE.ACESFilmicToneMapping; r.toneMappingExposure=1.1;
+  r.shadowMap.enabled=true; r.shadowMap.type=THREE.PCFSoftShadowMap; r.physicallyCorrectLights=true;
+  const scene=new THREE.Scene(); scene.fog=new THREE.Fog(0x0b1324,14,30);
+  const cam=new THREE.PerspectiveCamera(38,1,.1,100);
+
+  // reflections
+  const pm=new THREE.PMREMGenerator(r), env=new THREE.Scene();
+  env.add(new THREE.Mesh(new THREE.BoxGeometry(30,30,30),new THREE.MeshBasicMaterial({color:0x1b2440,side:THREE.BackSide})));
+  [[12,4,0xffffff,0,10,0,0,Math.PI/2],[6,8,0xfff0d6,-12,2,0,Math.PI/2,0],[6,8,0xa9bcff,12,2,0,-Math.PI/2,0]].forEach(([w,h,c,x,y,z,ry,rx])=>{
+    const m=new THREE.MeshBasicMaterial({color:c,side:THREE.DoubleSide}); m.color.multiplyScalar(3); const p=new THREE.Mesh(new THREE.PlaneGeometry(w,h),m); p.position.set(x,y,z); p.rotation.set(rx,ry,0); env.add(p); });
+  scene.environment=pm.fromScene(env,.03).texture;
+
+  const M=(c,met,rou)=>new THREE.MeshStandardMaterial({color:c,metalness:met,roughness:rou});
+  const paint=new THREE.MeshPhysicalMaterial({color:0xd9770a,metalness:.25,roughness:.38,clearcoat:.8,clearcoatRoughness:.2});   // industrial robot paint
+  const graph=M(0x2a2f38,.7,.4), steel=M(0xc8ced8,1,.25), rubber=M(0x15181e,.1,.85), alu=M(0xaab3c0,1,.35);
+  const cast=o=>{ o.traverse(m=>{ if(m.isMesh){ m.castShadow=true; m.receiveShadow=true; } }); return o; };
+
+  // floor
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(40,40),new THREE.MeshStandardMaterial({color:0x0b101c,metalness:0,roughness:.9,envMapIntensity:.25}));
+  floor.rotation.x=-Math.PI/2; floor.receiveShadow=true; scene.add(floor);
+  const grid=new THREE.GridHelper(40,40,0x2c3753,0x1a2238); grid.position.y=.002; scene.add(grid);
+  // safety lines
+  [-2.2,2.2].forEach(z=>{ const l=new THREE.Mesh(new THREE.PlaneGeometry(14,.08),new THREE.MeshBasicMaterial({color:0xd8b14a})); l.rotation.x=-Math.PI/2; l.position.set(0,.004,z); scene.add(l); });
+
+  // conveyor
+  const BELT_Y=.9, BELT_Z=0, conv=new THREE.Group(); scene.add(conv);
+  const frame=new THREE.Mesh(new THREE.BoxGeometry(13,.25,1.2),alu); frame.position.set(0,BELT_Y-.2,BELT_Z); conv.add(frame);
+  const bc=document.createElement("canvas"); bc.width=64; bc.height=64; const bx=bc.getContext("2d"); bx.fillStyle="#15181e"; bx.fillRect(0,0,64,64); bx.fillStyle="#2b313b"; bx.fillRect(0,0,8,64);
+  const bt=new THREE.CanvasTexture(bc); bt.wrapS=bt.wrapT=THREE.RepeatWrapping; bt.repeat.set(40,1); bt.encoding=THREE.sRGBEncoding;
+  const belt=new THREE.Mesh(new THREE.BoxGeometry(13,.06,1),new THREE.MeshStandardMaterial({map:bt,roughness:.85,metalness:.1})); belt.position.set(0,BELT_Y-.05,BELT_Z); conv.add(belt);
+  for(let x=-6;x<=6;x+=2){ [-.55,.55].forEach(z=>{ const leg=new THREE.Mesh(new THREE.BoxGeometry(.12,BELT_Y-.3,.12),graph); leg.position.set(x,(BELT_Y-.3)/2,BELT_Z+z); conv.add(leg); }); }
+  [[-6.5],[6.5]].forEach(([x])=>{ const rl=new THREE.Mesh(new THREE.CylinderGeometry(.16,.16,1.1,24),steel); rl.rotation.x=Math.PI/2; rl.position.set(x,BELT_Y-.1,BELT_Z); conv.add(rl); });
+  cast(conv);
+
+  // AI vision scanner gantry
+  const SCAN_X=-1.6, gantry=new THREE.Group(); scene.add(gantry);
+  [-.75,.75].forEach(z=>{ const p=new THREE.Mesh(new THREE.BoxGeometry(.14,1.4,.14),graph); p.position.set(SCAN_X,BELT_Y+.4,z); gantry.add(p); });
+  const top=new THREE.Mesh(new THREE.BoxGeometry(.5,.28,1.7),graph); top.position.set(SCAN_X,BELT_Y+1.15,0); gantry.add(top);
+  const lens=new THREE.Mesh(new THREE.CylinderGeometry(.09,.11,.12,24),M(0x0a0d12,.2,.1)); lens.position.set(SCAN_X,BELT_Y+.96,0); gantry.add(lens);
+  const ledMat=new THREE.MeshBasicMaterial({color:0x4fd1c5}); const led=new THREE.Mesh(new THREE.BoxGeometry(.52,.05,.05),ledMat); led.position.set(SCAN_X,BELT_Y+1.04,.86); gantry.add(led);
+  const beamMat=new THREE.MeshBasicMaterial({color:0x4fd1c5,transparent:true,opacity:.22,side:THREE.DoubleSide,depthWrite:false});
+  const beam=new THREE.Mesh(new THREE.ConeGeometry(.55,.95,4,1,true),beamMat); beam.position.set(SCAN_X,BELT_Y+.48,0); beam.rotation.y=Math.PI/4; gantry.add(beam);
+  const scanLight=new THREE.PointLight(0x4fd1c5,6,3,2); scanLight.position.set(SCAN_X,BELT_Y+.8,0); scene.add(scanLight);
+  cast(gantry); beam.castShadow=false;
+
+  // reject bin
+  const BIN=new THREE.Vector3(2.4,0,-2.3), bin=new THREE.Group(); bin.position.copy(BIN); scene.add(bin);
+  const binMat=new THREE.MeshStandardMaterial({color:0xb3261e,metalness:.3,roughness:.5});
+  [[1.4,.8,.08,0,.4,.7],[1.4,.8,.08,0,.4,-.7],[.08,.8,1.4,.7,.4,0],[.08,.8,1.4,-.7,.4,0],[1.4,.06,1.4,0,.03,0]].forEach(([w,h,d,x,y,z])=>{ const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),binMat); m.position.set(x,y,z); bin.add(m); });
+  cast(bin);
+
+  // robot arm (6-axis style)
+  const ROBOT=new THREE.Vector3(2.4,0,-1.05), robot=new THREE.Group(); robot.position.copy(ROBOT); scene.add(robot);
+  const pedestal=new THREE.Mesh(new THREE.CylinderGeometry(.55,.65,.35,40),graph); pedestal.position.y=.175; robot.add(pedestal);
+  const turret=new THREE.Group(); turret.position.y=.35; robot.add(turret);
+  const tbase=new THREE.Mesh(new THREE.CylinderGeometry(.45,.5,.4,40),paint); tbase.position.y=.2; turret.add(tbase);
+  const L1=1.55, L2=1.35, LG=.55;
+  const shoulder=new THREE.Group(); shoulder.position.y=.62; turret.add(shoulder);
+  const sj=new THREE.Mesh(new THREE.CylinderGeometry(.24,.24,.6,32),graph); sj.rotation.x=Math.PI/2; shoulder.add(sj);
+  const upper=new THREE.Mesh(new THREE.BoxGeometry(.32,L1,.36),paint); upper.position.y=L1/2; shoulder.add(upper);
+  const elbow=new THREE.Group(); elbow.position.y=L1; shoulder.add(elbow);
+  const ej=new THREE.Mesh(new THREE.CylinderGeometry(.2,.2,.5,32),graph); ej.rotation.x=Math.PI/2; elbow.add(ej);
+  const fore=new THREE.Mesh(new THREE.CylinderGeometry(.13,.17,L2,28),paint); fore.position.y=L2/2; elbow.add(fore);
+  const wrist=new THREE.Group(); wrist.position.y=L2; elbow.add(wrist);
+  const wj=new THREE.Mesh(new THREE.SphereGeometry(.15,24,24),graph); wrist.add(wj);
+  const flange=new THREE.Mesh(new THREE.CylinderGeometry(.11,.11,.2,24),steel); flange.position.y=.15; wrist.add(flange);
+  const grip=new THREE.Group(); grip.position.y=.3; wrist.add(grip);
+  const palm=new THREE.Mesh(new THREE.BoxGeometry(.42,.1,.2),graph); grip.add(palm);
+  const fingers=[-1,1].map(sx=>{ const f=new THREE.Mesh(new THREE.BoxGeometry(.05,.24,.16),steel); f.position.set(sx*.18,.16,0); grip.add(f); return f; });
+  const tip=new THREE.Object3D(); tip.position.y=LG-.3; grip.add(tip); // grasp point (wrist +LG)
+  cast(robot);
+
+  // simple analytic IK: put the grasp point at world target with the gripper pointing down
+  const v=new THREE.Vector3();
+  function reach(T){
+    const sx=ROBOT.x, sz=ROBOT.z, sy=ROBOT.y+.35+.62;
+    const dx=T.x-sx, dz=T.z-sz; turret.rotation.y=Math.atan2(-dz,dx);
+    const d=Math.max(.35,Math.hypot(dx,dz)), h=(T.y+LG)-sy;
+    const rr=Math.min(L1+L2-.01,Math.hypot(d,h));
+    const e=Math.acos(THREE.MathUtils.clamp((rr*rr-L1*L1-L2*L2)/(2*L1*L2),-1,1));
+    const a=Math.atan2(d,h), b=Math.atan2(L2*Math.sin(e),L1+L2*Math.cos(e));
+    const p1=a-b, p2=e;
+    shoulder.rotation.z=-p1; elbow.rotation.z=-p2; wrist.rotation.z=-(Math.PI-p1-p2);
+  }
+
+  // parts
+  const partMatOK=new THREE.MeshPhysicalMaterial({color:0xb9c2cf,metalness:1,roughness:.28});
+  const parts=[], PICK_X=ROBOT.x, PART=.38;
+  let spawnT=0, count=0, kIn=0,kOk=0,kNg=0, beltOn=true, job=null;
+  function spawn(){ count++;
+    const g=new THREE.Group();
+    const body=new THREE.Mesh(new THREE.CylinderGeometry(PART*.55,PART*.55,PART*.6,32),partMatOK.clone()); g.add(body);
+    const boss=new THREE.Mesh(new THREE.CylinderGeometry(PART*.22,PART*.22,PART*.75,24),steel); g.add(boss);
+    g.position.set(-6.2,BELT_Y+PART*.3,BELT_Z); cast(g); scene.add(g);
+    const bad = (count%6===4);
+    if(bad){ const dent=new THREE.Mesh(new THREE.BoxGeometry(PART*.35,PART*.08,PART*.12),new THREE.MeshStandardMaterial({color:0x3a1f12,roughness:.9})); dent.position.set(PART*.38,PART*.2,0); dent.rotation.z=.5; g.add(dent); }
+    parts.push({g,bad,scanned:false,state:"belt"});
+  }
+  function flash(ok){ ledMat.color.set(ok?0x37d67a:0xff4d4d); beamMat.color.set(ok?0x37d67a:0xff4d4d); scanLight.color.set(ok?0x37d67a:0xff4d4d);
+    setTimeout(()=>{ ledMat.color.set(0x4fd1c5); beamMat.color.set(0x4fd1c5); scanLight.color.set(0x4fd1c5); },500); }
+  function hud(){ $("kIn").textContent=kIn; $("kOk").textContent=kOk; $("kNg").textContent=kNg; $("kY").textContent=kIn?Math.round(kOk/kIn*100)+"%":"–"; }
+
+  const HOME=new THREE.Vector3(ROBOT.x-.6,BELT_Y+1.6,ROBOT.z+.2);
+  const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+  function path(points,durs){ return {points,durs,i:0,t:0}; }
+
+  // camera orbit
+  let yaw=-.55, pitch=.42, dist=11.5, drag=false, lx=0, ly=0, auto=true;
+  const tgt=new THREE.Vector3(.4,1,-.4);
+  const place=()=>{ cam.position.set(tgt.x+dist*Math.cos(pitch)*Math.sin(yaw), tgt.y+dist*Math.sin(pitch), tgt.z+dist*Math.cos(pitch)*Math.cos(yaw)); cam.lookAt(tgt); };
+  const dn=e=>{ drag=true; auto=false; const p=e.touches?e.touches[0]:e; lx=p.clientX; ly=p.clientY; };
+  const mv=e=>{ if(!drag) return; const p=e.touches?e.touches[0]:e; yaw-=(p.clientX-lx)*.006; pitch=THREE.MathUtils.clamp(pitch+(p.clientY-ly)*.004,.12,1.1); lx=p.clientX; ly=p.clientY; };
+  const up=()=>{ drag=false; };
+  cv.addEventListener("mousedown",dn); addEventListener("mousemove",mv); addEventListener("mouseup",up);
+  cv.addEventListener("touchstart",dn,{passive:true}); cv.addEventListener("touchmove",mv,{passive:true}); cv.addEventListener("touchend",up);
+
+  // lights
+  scene.add(new THREE.HemisphereLight(0xdde6ff,0x141a26,.7));
+  const sun=new THREE.DirectionalLight(0xfff1dc,3.2); sun.position.set(-5,9,6); sun.castShadow=true;
+  sun.shadow.mapSize.set(1024,1024); Object.assign(sun.shadow.camera,{left:-8,right:8,top:8,bottom:-8,near:1,far:30}); sun.shadow.bias=-.0005; scene.add(sun);
+  const rim=new THREE.DirectionalLight(0x9fb6ff,1.6); rim.position.set(6,4,-6); scene.add(rim);
+  const warn=new THREE.PointLight(0xffa21f,0,4,2); warn.position.set(ROBOT.x,2.8,ROBOT.z); scene.add(warn);
+  const beacon=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,.16,16),new THREE.MeshBasicMaterial({color:0x553300})); beacon.position.set(.3,.5,.3); robot.add(beacon);
+
+  function size(){ const w=cv.clientWidth,h=cv.clientHeight; r.setSize(w,h,false); cam.aspect=w/h; dist = w<700?14.5:11.5; cam.updateProjectionMatrix(); }
+  addEventListener("resize",size); size();
+  let vis=false; new IntersectionObserver(es=>vis=es[0].isIntersecting,{threshold:.05}).observe(cv);
+
+  reach(HOME);
+  let last=performance.now();
+  (function loop(now){
+    requestAnimationFrame(loop);
+    const dt=Math.min(.05,(now-last)/1000); last=now; if(!vis) return;
+    if(auto && !RM) yaw+=dt*.06;
+    place();
+    // belt + parts
+    if(beltOn){ bt.offset.x-=dt*.9*(40/13); spawnT+=dt; if(spawnT>1.5){ spawnT=0; spawn(); } }
+    for(let k=parts.length-1;k>=0;k--){ const p=parts[k];
+      if(p.state==="belt" && beltOn){ p.g.position.x+=dt*.9; }
+      if(p.state==="belt" && !p.scanned && p.g.position.x>=SCAN_X){ p.scanned=true; kIn++; flash(!p.bad); if(!p.bad) kOk++; hud(); }
+      if(p.state==="belt" && p.bad && p.scanned && p.g.position.x>=PICK_X && !job){
+        p.g.position.x=PICK_X; beltOn=false; p.state="pick";
+        const P=p.g.position.clone(); const above=P.clone().add(new THREE.Vector3(0,.9,0)); const grab=P.clone().add(new THREE.Vector3(0,PART*.3+.02,0));
+        const overBin=BIN.clone().add(new THREE.Vector3(0,1.7,0)), inBin=BIN.clone().add(new THREE.Vector3(0,1.15,0));
+        job={p, seq:[[HOME,above,.7],[above,grab,.45],["close",.25],[grab,above,.45,"carry"],[above,overBin,.8,"carry"],[overBin,inBin,.35,"carry"],["open",.25],[inBin,HOME,.8]], i:0, t:0};
+      }
+      if(p.state==="belt" && p.g.position.x>6.3){ scene.remove(p.g); parts.splice(k,1); }
+      if(p.state==="fall"){ p.vy-=9.8*dt; p.g.position.y+=p.vy*dt; p.g.rotation.z+=dt*3; if(p.g.position.y<BIN.y+.25){ p.g.position.y=BIN.y+.25; p.state="binned"; kNg++; hud(); setTimeout(()=>{ scene.remove(p.g); const ix=parts.indexOf(p); if(ix>=0) parts.splice(ix,1); },2500); } }
+    }
+    // robot job
+    if(job){ const s=job.seq[job.i]; job.t+=dt;
+      if(s[0]==="close"||s[0]==="open"){ const f=Math.min(1,job.t/s[1]); const o=s[0]==="close"? .18-(.18-.13)*f : .13+(.18-.13)*f; fingers[0].position.x=-o; fingers[1].position.x=o;
+        if(f>=1){ if(s[0]==="close"){ job.p.state="held"; } else { job.p.state="fall"; job.p.vy=0; } job.i++; job.t=0; } }
+      else { const f=Math.min(1,job.t/s[2]), e=ease(f); v.lerpVectors(s[0],s[1],e); if(s[0]===HOME||s[1]===HOME||true){ } reach(v);
+        if(job.p.state==="held"){ tip.getWorldPosition(v); job.p.g.position.set(v.x,v.y-PART*.3,v.z); }
+        if(f>=1){ job.i++; job.t=0; } }
+      if(job.i===3) beltOn=true;
+      warn.intensity = 3+Math.sin(now/120)*3; beacon.material.color.set(Math.sin(now/120)>0?0xffa21f:0x553300);
+      if(job.i>=job.seq.length){ job=null; warn.intensity=0; beacon.material.color.set(0x553300); }
+    } else { reach(HOME); }
+    r.render(scene,cam);
+  })(last);
+})();
+
+
+</script></body></html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shop floor · 3D simulation</title><link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>/* ===== factory scene ===== */
+  .factory{position:relative;height:520px;border-radius:28px;overflow:hidden;background:radial-gradient(ellipse at 50% 0%,#24304d,#0b1324 70%);box-shadow:0 30px 70px rgba(11,19,36,.25)}
+  .factory canvas{width:100%;height:100%;display:block;cursor:grab}
+  .factory canvas:active{cursor:grabbing}
+  .hud{position:absolute;left:18px;top:18px;display:grid;grid-template-columns:repeat(4,auto);gap:8px}
+  .hud div{background:rgba(11,19,36,.7);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:8px 12px;color:#fff;min-width:92px}
+  .hud span{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#9fabc4}
+  .hud b{font-family:Fraunces,serif;font-size:22px;color:var(--gold2)}
+  .flag{position:absolute;right:16px;bottom:14px;font-size:11px;letter-spacing:.12em;color:#8592ad}
+  .nogl{display:none;position:absolute;inset:0;place-items:center;color:#9fabc4}
+  @media (max-width:700px){ .factory{height:440px} .hud{grid-template-columns:repeat(2,auto);left:10px;top:10px} .hud div{min-width:80px;padding:6px 10px} .hud b{font-size:18px} }
+
+  
+  :root{--bg:#0b1324;--gold:#e5132b;--gold2:#ff8a94;--teal:#4fd1c5;--line:#2a2f3a;--sub:#aab4c9;--muted:#9fabc4;--ink:#f3efe8}
+  *{box-sizing:border-box} html,body{margin:0;height:100%;background:#0a0a0f;color:#f3efe8;font-family:Inter,system-ui,sans-serif;overflow:hidden}
+  .factory{height:100vh!important;border-radius:0!important;box-shadow:none!important}
+  .stage{height:calc(100vh - 92px)!important;border-radius:0!important}
+  .gcap{position:absolute;left:0;right:0;bottom:0;margin:0!important;border-radius:0!important;background:rgba(10,10,15,.92)!important;border:0!important;border-top:1px solid rgba(255,255,255,.08)!important;color:#f3efe8;padding:12px 16px!important}
+  .gcap p{color:#aab4c9!important}.gcap b,.gnum{color:#ff8a94!important}.gcap .thesis{color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-bottom:2px solid #e5132b}
+</style></head><body>
+<div class="factory">
+          <canvas id="shop3d" aria-label="3D simulation of a shop floor with machines, an AGV and a live KPI board, showing an issue resolved by root-cause analysis"></canvas>
+          <div class="hud">
+            <div><span>Line status</span><b id="sStat">Running</b></div>
+            <div><span>Issues resolved</span><b id="sFix">0</b></div>
+          </div>
+          <div class="flag">SIMULATION · illustrative data</div>
+          <div class="nogl" id="nogl2">3D view not supported on this device.</div>
+        </div>
+<script src="three.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const RM = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+</script>
+<script>
+/* ===== 3D: shop floor, root cause & KPI board ===== */
+(function(){
+  const cv=$("shop3d"); if(!cv) return;
+  if(!window.THREE){ $("nogl2").style.display="grid"; return; }
+  let r; try{ r=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true}); }catch(e){ $("nogl2").style.display="grid"; return; }
+  r.setPixelRatio(Math.min(devicePixelRatio,2)); r.outputEncoding=THREE.sRGBEncoding; r.toneMapping=THREE.ACESFilmicToneMapping; r.toneMappingExposure=1.1;
+  r.shadowMap.enabled=true; r.shadowMap.type=THREE.PCFSoftShadowMap; r.physicallyCorrectLights=true;
+  const scene=new THREE.Scene(); scene.fog=new THREE.Fog(0x0b1324,16,34);
+  const cam=new THREE.PerspectiveCamera(38,1,.1,100);
+  const pm=new THREE.PMREMGenerator(r), env=new THREE.Scene();
+  env.add(new THREE.Mesh(new THREE.BoxGeometry(30,30,30),new THREE.MeshBasicMaterial({color:0x1b2440,side:THREE.BackSide})));
+  [[12,4,0xffffff,0,10,0,0,Math.PI/2],[6,8,0xfff0d6,-12,2,0,Math.PI/2,0],[6,8,0xa9bcff,12,2,0,-Math.PI/2,0]].forEach(([w,h,c,x,y,z,ry,rx])=>{
+    const m=new THREE.MeshBasicMaterial({color:c,side:THREE.DoubleSide}); m.color.multiplyScalar(3); const p=new THREE.Mesh(new THREE.PlaneGeometry(w,h),m); p.position.set(x,y,z); p.rotation.set(rx,ry,0); env.add(p); });
+  scene.environment=pm.fromScene(env,.03).texture;
+  const M=(c,met,rou)=>new THREE.MeshStandardMaterial({color:c,metalness:met,roughness:rou});
+  const body=new THREE.MeshPhysicalMaterial({color:0x2f6fb3,metalness:.3,roughness:.4,clearcoat:.7,clearcoatRoughness:.25}); // machine paint
+  const grey=M(0xbfc6d1,.6,.35), dark=M(0x262b34,.6,.45), steel=M(0xc8ced8,1,.25);
+  const glass=new THREE.MeshPhysicalMaterial({color:0x9fc4ff,metalness:0,roughness:.05,transmission:.0,transparent:true,opacity:.28});
+  const cast=o=>{ o.traverse(m=>{ if(m.isMesh){ m.castShadow=true; m.receiveShadow=true; } }); return o; };
+
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(40,40),new THREE.MeshStandardMaterial({color:0x0b101c,roughness:.9,envMapIntensity:.25}));
+  floor.rotation.x=-Math.PI/2; floor.receiveShadow=true; scene.add(floor);
+  const grid=new THREE.GridHelper(40,40,0x2c3753,0x1a2238); grid.position.y=.002; scene.add(grid);
+  // AGV lane (yellow loop)
+  const lane=new THREE.Mesh(new THREE.RingGeometry(3.9,4.02,96),new THREE.MeshBasicMaterial({color:0xd8b14a})); lane.rotation.x=-Math.PI/2; lane.scale.set(1.6,1,1); lane.position.set(0,.004,.6); scene.add(lane);
+
+  // text sprite helper
+  function label(){ const c=document.createElement("canvas"); c.width=512; c.height=128; const t=new THREE.CanvasTexture(c); t.encoding=THREE.sRGBEncoding;
+    const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:t,transparent:true,depthTest:false})); sp.scale.set(3.2,.8,1); sp.renderOrder=10;
+    sp.userData.draw=(txt,col)=>{ const x=c.getContext("2d"); x.clearRect(0,0,512,128); x.fillStyle="rgba(11,19,36,.86)"; x.strokeStyle=col; x.lineWidth=4;
+      x.beginPath(); x.roundRect?x.roundRect(6,20,500,88,44):x.rect(6,20,500,88); x.fill(); x.stroke();
+      x.fillStyle=col; x.beginPath(); x.arc(56,64,12,0,Math.PI*2); x.fill();
+      x.fillStyle="#fff"; x.font="600 38px Inter, Arial, sans-serif"; x.textBaseline="middle"; x.fillText(txt,84,66); t.needsUpdate=true; };
+    return sp; }
+
+  // machines
+  const stations=[];
+  [-3.6,0,3.6].forEach((x,i)=>{
+    const g=new THREE.Group(); g.position.set(x,0,-1.4); scene.add(g);
+    const base=new THREE.Mesh(new THREE.BoxGeometry(2.2,.35,1.6),dark); base.position.y=.175; g.add(base);
+    const house=new THREE.Mesh(new THREE.BoxGeometry(2,1.6,1.4),body); house.position.y=1.15; g.add(house);
+    const roof=new THREE.Mesh(new THREE.BoxGeometry(2.05,.12,1.45),grey); roof.position.y=2.0; g.add(roof);
+    const win=new THREE.Mesh(new THREE.BoxGeometry(1.1,.8,.02),glass); win.position.set(-.25,1.2,.71); g.add(win);
+    const inner=new THREE.PointLight(0xbfd8ff,2,2.2,2); inner.position.set(-.25,1.2,.4); g.add(inner);
+    const spindle=new THREE.Mesh(new THREE.CylinderGeometry(.08,.08,.5,20),steel); spindle.position.set(-.25,1.25,.4); g.add(spindle);
+    const panel=new THREE.Mesh(new THREE.BoxGeometry(.45,.6,.08),dark); panel.position.set(.7,1.25,.74); g.add(panel);
+    const scr=new THREE.Mesh(new THREE.PlaneGeometry(.36,.24),new THREE.MeshBasicMaterial({color:0x4fd1c5})); scr.position.set(.7,1.35,.785); g.add(scr);
+    // stack light tower
+    const pole=new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,.5,12),steel); pole.position.set(.85,2.3,-.5); g.add(pole);
+    const cols=[0xff3b30,0xffa21f,0x37d67a], lamps=cols.map((c,k)=>{ const m=new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:.05,roughness:.3});
+      const l=new THREE.Mesh(new THREE.CylinderGeometry(.09,.09,.13,20),m); l.position.set(.85,2.6+(2-k)*.14,-.5); g.add(l); return m; });
+    const glow=new THREE.PointLight(0x37d67a,0,3,2); glow.position.set(.85,2.7,-.3); g.add(glow);
+    cast(g); win.castShadow=false;
+    const lab=label(); lab.position.set(x,3.35,-1.4); lab.visible=false; scene.add(lab);
+    const ring=new THREE.Mesh(new THREE.RingGeometry(.9,1.05,64),new THREE.MeshBasicMaterial({color:0xff4d4d,transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false}));
+    ring.rotation.x=-Math.PI/2; ring.position.set(x,.01,-1.4); scene.add(ring);
+    stations.push({g,lamps,glow,lab,ring,spindle,scr,state:"ok"});
+  });
+  const setLamp=(st,which)=>{ st.lamps.forEach((m,k)=>m.emissiveIntensity=(k===which?3.2:.05)); st.glow.color.set([0xff3b30,0xffa21f,0x37d67a][which]); st.glow.intensity=4; };
+  stations.forEach(st=>setLamp(st,2));
+
+  // KPI board
+  const kc=document.createElement("canvas"); kc.width=1024; kc.height=512; const kx=kc.getContext("2d");
+  const kt=new THREE.CanvasTexture(kc); kt.encoding=THREE.sRGBEncoding; kt.anisotropy=4;
+  const board=new THREE.Group(); board.position.set(0,0,-4.4); scene.add(board);
+  [-2.4,2.4].forEach(x=>{ const p=new THREE.Mesh(new THREE.BoxGeometry(.12,2.4,.12),dark); p.position.set(x,1.2,0); board.add(p); });
+  const frame=new THREE.Mesh(new THREE.BoxGeometry(5.3,2.75,.14),dark); frame.position.set(0,3.4,-.02); board.add(frame);
+  const screen=new THREE.Mesh(new THREE.PlaneGeometry(5.1,2.55),new THREE.MeshBasicMaterial({map:kt,toneMapped:false})); screen.position.set(0,3.4,.06); board.add(screen);
+  const screenGlow=new THREE.PointLight(0x7fb0ff,3,6,2); screenGlow.position.set(0,3.2,1); board.add(screenGlow);
+  cast(board);
+  const K={cap:{v:.86,t:.86,label:"Capacity utilisation"}, otd:{v:.93,t:.93,label:"On-time delivery"}, fpy:{v:.95,t:.95,label:"First-pass quality"}};
+  const hist=Array(40).fill(.93);
+  function drawBoard(status,col){
+    kx.fillStyle="#0c1426"; kx.fillRect(0,0,1024,512);
+    kx.fillStyle="#f2d88a"; kx.font="700 40px Inter, Arial"; kx.fillText("SHOP-FLOOR KPIs",40,66);
+    kx.fillStyle=col; kx.beginPath(); kx.arc(560,52,12,0,7); kx.fill(); kx.fillStyle="#dfe6f3"; kx.font="600 28px Inter, Arial"; kx.fillText(status,582,62);
+    Object.values(K).forEach((k,i)=>{ const y=120+i*92;
+      kx.fillStyle="#9fabc4"; kx.font="500 26px Inter, Arial"; kx.fillText(k.label,40,y);
+      kx.fillStyle="#1d2a45"; kx.fillRect(40,y+14,520,30);
+      const c=k.v>.9?"#37d67a":k.v>.8?"#ffb020":"#ff4d4d"; kx.fillStyle=c; kx.fillRect(40,y+14,520*k.v,30);
+      kx.fillStyle="#fff"; kx.font="700 30px Inter, Arial"; kx.fillText(Math.round(k.v*100)+"%",580,y+40); });
+    // trend
+    kx.strokeStyle="#2c3a5c"; kx.strokeRect(700,110,290,340); kx.fillStyle="#9fabc4"; kx.font="500 22px Inter, Arial"; kx.fillText("Delivery trend",712,140);
+    kx.strokeStyle="#4fd1c5"; kx.lineWidth=4; kx.beginPath(); hist.forEach((h,j)=>{ const x=712+j*(266/(hist.length-1)), y=430-(h-.6)/.4*260; j?kx.lineTo(x,y):kx.moveTo(x,y); }); kx.stroke(); kx.lineWidth=1;
+    kt.needsUpdate=true;
+  }
+
+  // AGV with crate
+  const agv=new THREE.Group(); scene.add(agv);
+  const ab=new THREE.Mesh(new THREE.BoxGeometry(1,.22,.7),new THREE.MeshPhysicalMaterial({color:0xd9770a,metalness:.3,roughness:.4,clearcoat:.6})); ab.position.y=.18; agv.add(ab);
+  const crate=new THREE.Mesh(new THREE.BoxGeometry(.6,.4,.5),M(0x8a6a3c,.1,.8)); crate.position.y=.5; agv.add(crate);
+  [[-.35,.3],[.35,.3],[-.35,-.3],[.35,-.3]].forEach(([x,z])=>{ const w=new THREE.Mesh(new THREE.CylinderGeometry(.08,.08,.06,16),dark); w.rotation.x=Math.PI/2; w.position.set(x,.08,z); agv.add(w); });
+  const beacon=new THREE.Mesh(new THREE.SphereGeometry(.06,12,12),new THREE.MeshBasicMaterial({color:0x4fd1c5})); beacon.position.set(.38,.33,0); agv.add(beacon);
+  cast(agv);
+
+  // lights
+  scene.add(new THREE.HemisphereLight(0xdde6ff,0x141a26,.7));
+  const sun=new THREE.DirectionalLight(0xfff1dc,3); sun.position.set(-5,10,7); sun.castShadow=true; sun.shadow.mapSize.set(1024,1024);
+  Object.assign(sun.shadow.camera,{left:-9,right:9,top:9,bottom:-9,near:1,far:30}); sun.shadow.bias=-.0005; scene.add(sun);
+  const rim=new THREE.DirectionalLight(0x9fb6ff,1.4); rim.position.set(6,4,-6); scene.add(rim);
+
+  // camera orbit
+  let yaw=.35, pitch=.38, dist=12.5, drag=false, lx=0, ly=0, auto=true; const tgt=new THREE.Vector3(0,1.4,-1.2);
+  const place=()=>{ cam.position.set(tgt.x+dist*Math.cos(pitch)*Math.sin(yaw), tgt.y+dist*Math.sin(pitch), tgt.z+dist*Math.cos(pitch)*Math.cos(yaw)); cam.lookAt(tgt); };
+  const dn=e=>{ drag=true; auto=false; const p=e.touches?e.touches[0]:e; lx=p.clientX; ly=p.clientY; };
+  const mv=e=>{ if(!drag) return; const p=e.touches?e.touches[0]:e; yaw-=(p.clientX-lx)*.006; pitch=THREE.MathUtils.clamp(pitch+(p.clientY-ly)*.004,.12,1.1); lx=p.clientX; ly=p.clientY; };
+  const up=()=>{ drag=false; };
+  cv.addEventListener("mousedown",dn); addEventListener("mousemove",mv); addEventListener("mouseup",up);
+  cv.addEventListener("touchstart",dn,{passive:true}); cv.addEventListener("touchmove",mv,{passive:true}); cv.addEventListener("touchend",up);
+  function size(){ const w=cv.clientWidth,h=cv.clientHeight; r.setSize(w,h,false); cam.aspect=w/h; dist=w<700?16:12.5; cam.updateProjectionMatrix(); }
+  addEventListener("resize",size); size();
+  let vis=false; new IntersectionObserver(es=>vis=es[0].isIntersecting,{threshold:.05}).observe(cv);
+
+  // root-cause story loop on one station at a time
+  const PH=[["Issue detected","#ff4d4d",0,2.6],["Root-cause analysis","#ffb020",1,3.2],["Corrective action","#4fd1c5",1,2.8],["Resolved","#37d67a",2,2.4]];
+  let phase=-1, pt=0, idle=0, who=1, fixed=0;
+  const status=(t)=>{ $("sStat").textContent=t; };
+  drawBoard("All stations running","#37d67a");
+  let last=performance.now(), boardT=0;
+  (function loop(now){
+    requestAnimationFrame(loop); const dt=Math.min(.05,(now-last)/1000); last=now; if(!vis) return; const t=now/1000;
+    if(auto && !RM) yaw+=dt*.05; place();
+    stations.forEach((st,i)=>{ if(!(phase===0 && i===who)) st.spindle.rotation.y+=dt*12; });
+    // AGV on an elliptical loop
+    const a=t*.35; agv.position.set(Math.cos(a)*6.4,0,.6+Math.sin(a)*4); agv.rotation.y=-a-Math.PI/2+Math.PI/2*0; agv.lookAt(Math.cos(a+.05)*6.4,0,.6+Math.sin(a+.05)*4);
+    beacon.material.color.set(Math.sin(t*6)>0?0x4fd1c5:0x0d3b38);
+    // story
+    if(phase<0){ idle+=dt; if(idle>3){ idle=0; phase=0; pt=0; who=(who+1)%3; } }
+    else {
+      const st=stations[who], P=PH[phase]; pt+=dt;
+      if(pt<dt*1.5){ setLamp(st,P[2]); st.lab.visible=true; st.lab.userData.draw(P[0],P[1]); status(P[0]);
+        if(phase===0){ K.cap.t=.71; K.otd.t=.78; K.fpy.t=.84; } if(phase===2){ K.cap.t=.82; K.otd.t=.88; K.fpy.t=.92; } if(phase===3){ K.cap.t=.88; K.otd.t=.95; K.fpy.t=.97; } }
+      st.ring.material.color.set(P[1]); st.ring.material.opacity=.55+.35*Math.sin(t*6); const sc=1+((t*1.2)%1)*.4; st.ring.scale.set(sc,sc,sc);
+      st.scr.material.color.set(P[1]);
+      st.lab.position.y=3.35+Math.sin(t*2)*.06;
+      if(pt>P[3]){ phase++; pt=0;
+        if(phase>=PH.length){ phase=-1; st.lab.visible=false; st.ring.material.opacity=0; st.scr.material.color.set(0x4fd1c5); setLamp(st,2); fixed++; $("sFix").textContent=fixed; status("Running");
+          K.cap.t=.86+Math.random()*.04; K.otd.t=.93+Math.random()*.03; K.fpy.t=.95+Math.random()*.03; } }
+    }
+    // smooth KPI values + board refresh
+    Object.values(K).forEach(k=>k.v+=(k.t-k.v)*Math.min(1,dt*1.5));
+    boardT+=dt; if(boardT>.15){ boardT=0; hist.push(K.otd.v); hist.shift();
+      const ph=phase<0?["All stations running","#37d67a"]:[("Station "+(who+1)+": "+PH[phase][0]),PH[phase][1]]; drawBoard(ph[0],ph[1]); }
+    r.render(scene,cam);
+  })(last);
+})();
+
+
+</script></body></html>

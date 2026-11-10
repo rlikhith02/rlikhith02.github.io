@@ -1,0 +1,108 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thesis figures · 3D gallery</title><link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>/* ===== 3D thesis figure carousel ===== */
+  .stage{position:relative;height:480px;perspective:1600px;perspective-origin:50% 35%;border-radius:28px;overflow:hidden;
+    background:radial-gradient(ellipse at 50% 20%,#1f2b4a 0%,#0b1324 70%);cursor:grab;user-select:none;touch-action:pan-y}
+  .stage:active{cursor:grabbing}
+  .stage::after{content:"";position:absolute;left:0;right:0;bottom:0;height:120px;background:linear-gradient(transparent,rgba(11,19,36,.9));pointer-events:none}
+  .ring{position:absolute;left:50%;top:44%;width:0;height:0;transform-style:preserve-3d}
+  .fig{position:absolute;width:var(--cw,320px);margin:0;left:calc(var(--cw,320px)/-2);top:-130px;transform-style:preserve-3d;transition:filter .4s,opacity .4s;
+    -webkit-box-reflect:below 10px linear-gradient(transparent 70%,rgba(255,255,255,.18))}
+  .fimg{background:#fff;border-radius:14px;height:200px;display:grid;place-items:center;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.4)}
+  .fimg img{max-width:100%;max-height:100%;object-fit:contain;display:block;pointer-events:none}
+  .fig figcaption{margin-top:10px;color:#cfd6e6;font-size:12.5px;text-align:center;line-height:1.35}
+  .fig figcaption b{color:var(--gold2)}
+  .fig.front .fimg{box-shadow:0 0 0 2px var(--gold),0 30px 70px rgba(0,0,0,.55)}
+  .nav{position:absolute;top:44%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(11,19,36,.6);
+    color:#fff;font-size:26px;line-height:1;cursor:pointer;backdrop-filter:blur(6px);z-index:5;transition:background .2s,transform .2s}
+  .nav:hover{background:rgba(62,230,180,.3);transform:translateY(-50%) scale(1.08)}
+  .nav.prev{left:16px}.nav.next{right:16px}
+  .gcap{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 20px;margin-top:14px}
+  .gnum{font-family:Fraunces,serif;font-size:22px;color:#0f9b78;white-space:nowrap}
+  .gcap b{color:#0f9b78}.gcap p{margin:4px 0 0;color:var(--sub);font-size:14px}
+  .gcap .thesis{margin:0;white-space:nowrap}
+  .lb{position:fixed;inset:0;z-index:100;background:rgba(5,9,18,.88);backdrop-filter:blur(6px);display:none;place-items:center;padding:30px;gap:12px;grid-template-rows:1fr auto}
+  .lb.on{display:grid;animation:lbin .35s ease}
+  @keyframes lbin{from{opacity:0;transform:scale(.97)}}
+  .lb img{max-width:min(1200px,94vw);max-height:78vh;background:#fff;border-radius:12px;align-self:end}
+  .lb p{color:#dfe5f2;max-width:900px;text-align:center;margin:0;font-size:14.5px}
+  .lbx{position:absolute;top:16px;right:20px;width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;font-size:28px;cursor:pointer}
+  @media (max-width:700px){ .stage{height:400px} .fimg{height:150px} .fig{top:-100px} .gcap{grid-template-columns:1fr} .nav{width:40px;height:40px} }
+
+
+  .cgal{grid-column:1/-1;background:var(--bg);padding:22px 22px 24px;border-top:1px solid rgba(255,255,255,.08)}
+  .cgal-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .cgal-h h5{margin:0;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold2)}
+  .cgal-h span{font-size:12.5px;color:var(--muted)}
+  .cgal .stage{height:420px;border-radius:18px}
+  .cfab .factory{height:460px;border-radius:18px;box-shadow:none}
+  .cgal .gcap{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);color:#e7ecf6}
+  .cgal .gcap p{color:#aab4c9}.cgal .gcap .thesis{color:#fff}
+  @media (max-width:700px){ .cgal{padding:16px} .cgal .stage{height:360px} }
+
+  
+  :root{--bg:#0b1324;--gold:#e5132b;--gold2:#ff8a94;--teal:#4fd1c5;--line:#2a2f3a;--sub:#aab4c9;--muted:#9fabc4;--ink:#f3efe8}
+  *{box-sizing:border-box} html,body{margin:0;height:100%;background:#0a0a0f;color:#f3efe8;font-family:Inter,system-ui,sans-serif;overflow:hidden}
+  .factory{height:100vh!important;border-radius:0!important;box-shadow:none!important}
+  .stage{height:calc(100vh - 92px)!important;border-radius:0!important}
+  .gcap{position:absolute;left:0;right:0;bottom:0;margin:0!important;border-radius:0!important;background:rgba(10,10,15,.92)!important;border:0!important;border-top:1px solid rgba(255,255,255,.08)!important;color:#f3efe8;padding:12px 16px!important}
+  .gcap p{color:#aab4c9!important}.gcap b,.gnum{color:#ff8a94!important}.gcap .thesis{color:#fff;text-decoration:none;font-weight:600;font-size:13px;border-bottom:2px solid #e5132b}
+</style></head><body>
+<div style="position:relative;height:100vh"><div class="stage" id="stage">
+      <div class="ring" id="ring"><figure class="fig" data-i="0"><div class="fimg"><img src="fig-cover.jpg" alt="Thesis cover: physics-informed deep learning for fire safety." loading="lazy"></div><figcaption><b>Cover</b> Thesis cover: physics-informed deep learning for fire safety.</figcaption></figure><figure class="fig" data-i="1"><div class="fimg"><img src="fig-arch.jpg" alt="VisionKoopmanNet architecture in three phases" loading="lazy"></div><figcaption><b>Fig. 2.2</b> VisionKoopmanNet architecture in three phases</figcaption></figure><figure class="fig" data-i="2"><div class="fimg"><img src="fig-method.jpg" alt="Research method" loading="lazy"></div><figcaption><b>Fig. 3.1</b> Research method</figcaption></figure><figure class="fig" data-i="3"><div class="fimg"><img src="fig-gate.jpg" alt="Stage-Gate review decisions" loading="lazy"></div><figcaption><b>Fig. 4.2</b> Stage-Gate review decisions</figcaption></figure><figure class="fig" data-i="4"><div class="fimg"><img src="fig-fmea.jpg" alt="FMEA: failure modes, S/O/D scores and RPN" loading="lazy"></div><figcaption><b>Table 4.10</b> FMEA: failure modes, S/O/D scores and RPN</figcaption></figure><figure class="fig" data-i="5"><div class="fimg"><img src="fig-fishbone.jpg" alt="Safety and governance challenges" loading="lazy"></div><figcaption><b>Fig. 4.7</b> Safety and governance challenges</figcaption></figure><figure class="fig" data-i="6"><div class="fimg"><img src="fig-hybrid.jpg" alt="Hybrid ML–FDS tiered workflow" loading="lazy"></div><figcaption><b>Fig. 4.3</b> Hybrid ML–FDS tiered workflow</figcaption></figure><figure class="fig" data-i="7"><div class="fimg"><img src="fig-iter.jpg" alt="Iteration narrative" loading="lazy"></div><figcaption><b>Fig. 4.16</b> Iteration narrative</figcaption></figure><figure class="fig" data-i="8"><div class="fimg"><img src="fig-midfire.jpg" alt="Safety wrapper on a real fire test" loading="lazy"></div><figcaption><b>Fig. 4.21</b> Safety wrapper on a real fire test</figcaption></figure></div>
+      <button class="nav prev" id="gPrev" aria-label="Previous figure">‹</button>
+      <button class="nav next" id="gNext" aria-label="Next figure">›</button>
+    </div>
+    <div class="gcap" aria-live="polite"><span class="gnum" id="gNum">1 / 9</span><div><b id="gLab"></b> <span id="gTitle"></span><p id="gDesc"></p></div><a class="thesis" href="https://hdl.handle.net/20.500.12380/312563">📄 Full thesis →</a></div>
+</div><div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Enlarged figure"><button class="lbx" id="lbx" aria-label="Close">×</button><img id="lbImg" alt=""><p id="lbCap"></p></div>
+<script src="three.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const RM = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+</script>
+<script>
+/* ===== 3D thesis figure carousel ===== */
+(function(){
+  const FIG=[["cover", "Cover", "Thesis cover: physics-informed deep learning for fire safety.", "Cover illustration of the thesis report."], ["arch", "Fig. 2.2", "VisionKoopmanNet architecture in three phases", "Phase 1 is an HRR encoder trained on FDS simulations. Phase 2 is an image branch trained on NIST fire video. Phase 3 tries to align both in a shared Koopman latent space."], ["method", "Fig. 3.1", "Research method", "From literature review and stakeholder elicitation, through six framework phases and validation, to discussion and governance planning."], ["gate", "Fig. 4.2", "Stage-Gate review decisions", "Each gate ends in Pass, Conditional pass (address gaps, then re-review) or Fail (rework before re-gating), based on documented evidence."], ["fmea", "Table 4.10", "FMEA: failure modes, S/O/D scores and RPN", "Six failure modes were scored. The highest risks were an overconfident incorrect output (RPN 270) and a false negative on a real fire (RPN 240), each with a mitigation."], ["fishbone", "Fig. 4.7", "Safety and governance challenges", "Cause-and-effect diagram of risks around the safety wrapper and FMEA governance, such as false negatives, over-reliance on ML output and missing audit trails."], ["hybrid", "Fig. 4.3", "Hybrid ML\u2013FDS tiered workflow", "Level 1 ML screening handles routine cases. High-risk cases escalate to Level 2 verification in the Fire Dynamics Simulator (FDS)."], ["iter", "Fig. 4.16", "Iteration narrative", "Each marker is a logged training run. The Phase 2 image branch shows roughly a 9\u00d7 error reduction from the first broken version to the final fine-tuned model."], ["midfire", "Fig. 4.21", "Safety wrapper on a real fire test", "NIST mid-fire case (true peak 108.9 kW). The model predicted 114.5 kW on the first step, about 5% error, and the safety wrapper reported NORMAL."]];
+  const stage=$("stage"), ring=$("ring"), cards=[...ring.querySelectorAll(".fig")], N=cards.length;
+  let rot=0, target=0, vel=0, drag=false, lx=0, moved=0, autoT=0, R=520;
+  function layout(){ const cw = stage.clientWidth<700 ? 220 : 320; stage.style.setProperty("--cw",cw+"px");
+    R = Math.round((cw/2)/Math.tan(Math.PI/N))+40; cards.forEach((c,i)=>{ c.dataset.a=i*360/N; }); }
+  layout(); addEventListener("resize",layout);
+  const idx=()=>((Math.round(-rot/(360/N))%N)+N)%N;
+  let shown=-1;
+  function caption(){ const i=idx(); if(i===shown) return; shown=i; const f=FIG[i];
+    $("gNum").textContent=(i+1)+" / "+N; $("gLab").textContent=f[1]; $("gTitle").textContent=f[2]; $("gDesc").textContent=f[3];
+    cards.forEach((c,j)=>c.classList.toggle("front",j===i)); }
+  function go(d){ target=Math.round(target/(360/N))*(360/N)-d*(360/N); autoT=0; }
+  $("gPrev").addEventListener("click",e=>{ e.stopPropagation(); go(-1); });
+  $("gNext").addEventListener("click",e=>{ e.stopPropagation(); go(1); });
+  const dn=e=>{ if(e.target.closest(".nav")) return; drag=true; moved=0; lx=(e.touches?e.touches[0]:e).clientX; };
+  const mv=e=>{ if(!drag) return; const x=(e.touches?e.touches[0]:e).clientX, dx=x-lx; lx=x; moved+=Math.abs(dx); target+=dx*.25; rot=target; autoT=0; };
+  const up=()=>{ if(!drag) return; drag=false; target=Math.round(target/(360/N))*(360/N); };
+  stage.addEventListener("mousedown",dn); addEventListener("mousemove",mv); addEventListener("mouseup",up);
+  stage.addEventListener("touchstart",dn,{passive:true}); stage.addEventListener("touchmove",mv,{passive:true}); stage.addEventListener("touchend",up);
+  addEventListener("keydown",e=>{ if($("lb").classList.contains("on")){ if(e.key==="Escape") close(); return; }
+    const r=stage.getBoundingClientRect(); if(r.top<innerHeight && r.bottom>0){ if(e.key==="ArrowRight") go(1); if(e.key==="ArrowLeft") go(-1); } });
+  // click: front card opens lightbox, other cards rotate to front
+  cards.forEach((c,i)=>c.addEventListener("click",()=>{ if(moved>6) return;
+    if(i===idx()){ $("lbImg").src=c.querySelector("img").src; $("lbImg").alt=FIG[i][2]; $("lbCap").textContent=FIG[i][1]+" · "+FIG[i][2]+". "+FIG[i][3]; $("lb").classList.add("on"); }
+    else { let d=((i-idx())%N+N)%N; if(d>N/2) d-=N; go(d); } }));
+  function close(){ $("lb").classList.remove("on"); }
+  $("lbx").addEventListener("click",close); $("lb").addEventListener("click",e=>{ if(e.target.id==="lb") close(); });
+  let vis=false; new IntersectionObserver(es=>vis=es[0].isIntersecting).observe(stage);
+  let last=performance.now();
+  (function loop(now){ requestAnimationFrame(loop); const dt=Math.min(.05,(now-last)/1000); last=now; if(!vis) return;
+    if(!drag && !RM && !$("lb").classList.contains("on")){ autoT+=dt; if(autoT>3.2){ go(1); } }
+    if(!drag) rot+=(target-rot)*Math.min(1,dt*6);
+    ring.style.transform=`translateZ(${-R}px) rotateY(${rot}deg)`;
+    cards.forEach(c=>{ const a=((+c.dataset.a+rot)%360+360)%360, f=Math.cos(a*Math.PI/180);
+      c.style.transform=`rotateY(${c.dataset.a}deg) translateZ(${R}px)`;
+      c.style.filter=`brightness(${(.45+.55*Math.max(0,f)).toFixed(2)})`; c.style.zIndex=Math.round(f*100)+100; });
+    caption();
+  })(last);
+})();
+
+
+
+</script></body></html>
