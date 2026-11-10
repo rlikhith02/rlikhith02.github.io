@@ -1,9 +1,509 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Likhith Rudresh – Quality, Process & CI Engineer</title>
-<style>body{margin:0;background:#0b1324;color:#9fabc4;font:15px system-ui,sans-serif;display:grid;place-items:center;height:100vh}</style></head>
-<body><p>Loading Likhith's interactive CV…</p>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Likhith Rudresh · Digital Resume</title>
+<meta name="description" content="Likhith Rudresh, Quality & Process Engineer in Gothenburg. MSc Quality and Operations Management (Chalmers), Six Sigma Black Belt. Press play to hear the resume." />
+<meta property="og:title" content="Likhith Rudresh · Digital Resume" />
+<meta property="og:description" content="Quality & Process Engineer · Six Sigma Black Belt · MSc Chalmers. Press play to hear the resume." />
+<meta property="og:image" content="https://rlikhith02.github.io/series/assets/og-image.jpg" />
+<meta property="og:url" content="https://rlikhith02.github.io/" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="theme-color" content="#0b0b0c" />
+<link rel="icon" href="series/favicon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#0b0b0c; --bg2:#141416; --card:#18181b; --line:rgba(255,255,255,.09);
+  --text:#f4f4f5; --mute:#a1a1aa; --dim:#71717a;
+  --red:#e50914; --red2:#ff3d47; --glow:rgba(229,9,20,.45);
+  --display:'Bebas Neue',Oswald,Impact,sans-serif; --serif:'Instrument Serif',Georgia,serif;
+  --sans:'Inter',ui-sans-serif,system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:clip}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:clip}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.wrap{width:min(1180px,100% - 40px);margin-inline:auto}
+:focus-visible{outline:2px solid var(--red2);outline-offset:3px;border-radius:6px}
+
+/* nav */
+.nav{position:fixed;inset:0 0 auto;z-index:40;transition:background .3s,backdrop-filter .3s}
+.nav.solid{background:rgba(11,11,12,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav .wrap{display:flex;align-items:center;gap:28px;height:68px}
+.logo{font-family:var(--display);font-size:30px;letter-spacing:.06em;color:var(--red);line-height:1}
+.logo small{font-family:var(--sans);font-size:10px;letter-spacing:.32em;color:var(--mute);margin-left:8px;vertical-align:middle}
+.nav ul{display:flex;gap:22px;list-style:none;font-size:14px;color:#d4d4d8}
+.nav ul a:hover{color:#fff}
+.nav .sp{flex:1}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.22);font-size:13px;font-weight:600;transition:.2s}
+.pill:hover{background:#fff;color:#000}
+
+/* hero */
+.hero{position:relative;min-height:min(90vh,820px);display:flex;align-items:flex-end;overflow:hidden}
+.hero picture img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:0% 30%;filter:brightness(.88) saturate(1.05);transform:scale(1.04);animation:kb 26s ease-in-out infinite alternate}
+@keyframes kb{to{transform:scale(1.12) translateX(-1.5%)}}
+.hero::before{content:"";position:absolute;inset:0;z-index:1;background:
+  linear-gradient(90deg,rgba(11,11,12,.97) 0%,rgba(11,11,12,.82) 30%,rgba(11,11,12,.25) 62%,rgba(11,11,12,.05) 100%),
+  linear-gradient(0deg,var(--bg) 0%,rgba(11,11,12,0) 38%),
+  radial-gradient(60% 50% at 0% 100%,rgba(229,9,20,.28),transparent 70%)}
+.hero .wrap{position:relative;z-index:2;padding:140px 0 70px}
+.orig{display:flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.34em;color:#e4e4e7;font-weight:600}
+.orig b{font-family:var(--display);font-size:26px;letter-spacing:0;color:var(--red);line-height:1}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(64px,11vw,148px);line-height:.86;letter-spacing:.01em;margin:14px 0 18px;text-shadow:0 6px 40px rgba(0,0,0,.6)}
+h1 span{display:block;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.85)}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;font-size:14px;color:#e4e4e7;margin-bottom:16px}
+.meta .new{color:#46d369;font-weight:700}
+.meta .box{border:1px solid rgba(255,255,255,.45);padding:1px 7px;border-radius:3px;font-size:12px;font-weight:600}
+.meta .dot{width:4px;height:4px;border-radius:50%;background:var(--dim)}
+.syn{max-width:600px;font-size:17px;color:#e4e4e7;margin-bottom:26px}
+.syn em{font-family:var(--serif);font-size:1.15em;color:#fff}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:22px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:13px 26px;border-radius:6px;font-weight:700;font-size:16px;transition:transform .15s,background .2s}
+.btn:active{transform:scale(.97)}
+.btn.play{background:#fff;color:#000}
+.btn.play:hover{background:rgba(255,255,255,.82)}
+.btn.sec{background:rgba(109,109,110,.6);color:#fff}
+.btn.sec:hover{background:rgba(109,109,110,.42)}
+.btn svg{width:22px;height:22px}
+.btn .t{font-weight:500;font-size:13px;opacity:.6}
+.contact{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13.5px;color:var(--mute)}
+.contact a{display:inline-flex;align-items:center;gap:7px}
+.contact a:hover{color:#fff}
+.contact svg{width:15px;height:15px;opacity:.8}
+
+/* sections */
+section{padding:56px 0 18px;scroll-margin-top:80px}
+.sh{display:flex;align-items:baseline;gap:14px;margin-bottom:22px}
+.sh h2{font-family:var(--display);font-weight:400;font-size:clamp(30px,4vw,42px);letter-spacing:.02em;line-height:1}
+.sh .k{font-size:12px;letter-spacing:.28em;color:var(--red2);font-weight:700;text-transform:uppercase}
+.sh .ln{flex:1;height:1px;background:var(--line)}
+.chap{border-radius:14px;transition:box-shadow .4s,background .4s}
+.chap.live{box-shadow:0 0 0 1px rgba(229,9,20,.55),0 18px 60px -20px var(--glow);background:rgba(229,9,20,.045)}
+
+/* top numbers */
+.top{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.num{position:relative;display:flex;align-items:center;gap:6px;padding:18px 16px 18px 8px;border-radius:10px;background:linear-gradient(180deg,#1b1b1e,#121214);border:1px solid var(--line);overflow:hidden}
+.num i{font-style:normal;font-family:var(--display);font-size:92px;line-height:.8;color:var(--bg);-webkit-text-stroke:2px #3f3f46;margin-right:-4px;flex:none;width:56px;text-align:center}
+.num b{display:block;font-family:var(--display);font-weight:400;font-size:36px;line-height:1;color:#fff}
+.num span{font-size:12.5px;color:var(--mute);line-height:1.3;display:block;margin-top:4px}
+.num::after{content:"";position:absolute;inset:auto 0 0 0;height:2px;background:linear-gradient(90deg,var(--red),transparent)}
+
+/* episodes */
+.eps{display:flex;flex-direction:column;gap:6px}
+.ep{display:grid;grid-template-columns:50px 210px 1fr;gap:22px;padding:22px 20px;border-radius:14px;border-bottom:1px solid var(--line);align-items:start}
+.ep .n{font-family:var(--display);font-size:46px;color:#52525b;line-height:1;text-align:center;padding-top:6px}
+.thumb{position:relative;aspect-ratio:16/9;border-radius:8px;overflow:hidden;background:var(--g);display:flex;align-items:flex-end;padding:12px;isolation:isolate}
+.thumb::before{content:"";position:absolute;inset:0;background:radial-gradient(80% 90% at 85% 10%,var(--a),transparent 60%);opacity:.55;z-index:-1}
+.thumb strong{font-family:var(--display);font-weight:400;font-size:30px;line-height:.9;letter-spacing:.02em;text-shadow:0 2px 10px rgba(0,0,0,.5)}
+.thumb .bar{position:absolute;left:0;bottom:0;height:3px;width:var(--p,0%);background:var(--red);transition:width .3s linear}
+.thumb .badge{position:absolute;top:8px;left:8px;font-size:10px;font-weight:800;letter-spacing:.1em;background:var(--red);padding:2px 6px;border-radius:3px}
+.ep h3{font-size:19px;font-weight:700;line-height:1.3}
+.ep .who{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 14px;color:var(--mute);font-size:14px;margin:3px 0 10px}
+.ep .who b{color:#e4e4e7;font-weight:600}
+.ep ul{list-style:none;display:flex;flex-direction:column;gap:8px}
+.ep li{position:relative;padding-left:18px;color:#d4d4d8;font-size:15px}
+.ep li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:7px;border-radius:2px;background:var(--red);transform:rotate(45deg)}
+.ep li mark{background:none;color:#fff;font-weight:700}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.tag{font-size:12px;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.07);color:#d4d4d8}
+
+/* edu + skills */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{padding:22px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+.card .yr{font-size:12px;letter-spacing:.18em;color:var(--red2);font-weight:700}
+.card h3{font-size:18px;margin:6px 0 2px}
+.card p{color:var(--mute);font-size:14.5px}
+.card .ch{display:inline-block;margin-top:10px;font-size:12px;font-weight:700;padding:3px 9px;border-radius:4px;background:rgba(229,9,20,.14);color:#ffb3b7}
+.skills{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:16px;margin:-16px}
+.sk h4{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:#e4e4e7;margin-bottom:10px}
+.sk h4 small{display:block;font-size:12px;letter-spacing:0;text-transform:none;color:var(--dim);font-weight:400;margin-top:2px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{font-size:13px;padding:6px 11px;border-radius:6px;background:#202024;border:1px solid var(--line);transition:.2s}
+.chip.hot{border-color:rgba(229,9,20,.6);background:rgba(229,9,20,.12)}
+.chip:hover{border-color:rgba(255,255,255,.35)}
+
+/* awards */
+.awards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.aw{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;border-radius:10px;background:var(--card);border:1px solid var(--line)}
+.aw .ic{flex:none;width:36px;height:36px;border-radius:8px;display:grid;place-items:center;background:rgba(229,9,20,.14);color:#ff8a90;font-weight:800;font-size:13px}
+.aw h4{font-size:15px}
+.aw p{font-size:13.5px;color:var(--mute)}
+.aw a{color:#fff;text-decoration:underline;text-decoration-color:rgba(255,255,255,.35);text-underline-offset:3px}
+
+/* quote */
+.quote{position:relative;padding:44px 40px;border-radius:16px;background:radial-gradient(90% 120% at 0% 0%,rgba(229,9,20,.22),transparent 60%),#121214;border:1px solid var(--line);overflow:hidden}
+.quote::before{content:"\201C";position:absolute;top:-40px;right:24px;font-family:var(--serif);font-size:260px;color:rgba(229,9,20,.16);line-height:1}
+.quote blockquote{font-family:var(--serif);font-size:clamp(22px,2.6vw,31px);line-height:1.3;max-width:860px}
+.quote cite{display:block;margin-top:18px;font-style:normal;color:var(--mute);font-size:14px}
+.quote cite b{color:#fff}
+.endcta{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+
+footer{padding:60px 0 140px;color:var(--dim);font-size:13px;text-align:center}
+footer a{color:var(--mute);text-decoration:underline;text-underline-offset:3px}
+
+/* player */
+.player{position:fixed;left:50%;bottom:16px;z-index:50;width:min(860px,100% - 24px);transform:translate(-50%,140%);transition:transform .45s cubic-bezier(.2,.8,.2,1);background:rgba(20,20,22,.94);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.12);border-radius:14px;box-shadow:0 30px 80px -20px rgba(0,0,0,.8);padding:12px 16px 14px}
+.player.on{transform:translate(-50%,0)}
+.prow{display:flex;align-items:center;gap:12px}
+.pbtn{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none;transition:background .2s}
+.pbtn:hover{background:rgba(255,255,255,.1)}
+.pbtn.main{background:#fff;color:#000}
+.pbtn.main:hover{background:#ddd}
+.pbtn svg{width:20px;height:20px}
+.pinfo{flex:1;min-width:0}
+.pinfo .c{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px;letter-spacing:.2em;color:var(--red2);font-weight:700;text-transform:uppercase}
+.pinfo .s{font-size:14px;color:#e4e4e7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ptime{font-size:12px;color:var(--mute);font-variant-numeric:tabular-nums;flex:none}
+.track{position:relative;height:16px;margin-top:8px;cursor:pointer;touch-action:none}
+.track .rail{position:absolute;left:0;right:0;top:6px;height:4px;border-radius:4px;background:rgba(255,255,255,.16);overflow:hidden}
+.track .fill{position:absolute;inset:0 auto 0 0;width:0;background:var(--red)}
+.track .tick{position:absolute;top:4px;width:2px;height:8px;background:rgba(20,20,22,.95)}
+.track .knob{position:absolute;top:2px;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--red);box-shadow:0 0 0 4px rgba(229,9,20,.25);left:0}
+.chaps{display:flex;gap:6px;margin-top:8px;overflow-x:auto;scrollbar-width:none}
+.chaps::-webkit-scrollbar{display:none}
+.chaps button{font-size:12px;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.06);color:var(--mute);white-space:nowrap;flex:none}
+.chaps button.on{background:var(--red);color:#fff}
+.subs{position:fixed;left:50%;bottom:150px;z-index:49;transform:translateX(-50%);width:min(820px,100% - 32px);text-align:center;pointer-events:none;opacity:0;transition:opacity .3s}
+.subs.on{opacity:1}
+.subs span{display:inline;background:rgba(0,0,0,.78);padding:4px 10px;border-radius:4px;font-size:clamp(15px,1.8vw,19px);line-height:1.7;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+
+.rv{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+.rv.in{opacity:1;transform:none}
+
+@media (max-width:980px){
+  .nav ul{display:none}
+  .top{grid-template-columns:repeat(2,1fr)}
+  .top .num:last-child{grid-column:span 2}
+  .skills{grid-template-columns:1fr 1fr}
+}
+@media (max-width:720px){
+  .hero{min-height:auto}
+  .hero picture img{height:440px;object-position:46% 30%;animation:none;transform:none}
+  .hero::before{background:linear-gradient(180deg,rgba(11,11,12,.35) 0px,rgba(11,11,12,0) 120px,rgba(11,11,12,.15) 230px,var(--bg) 430px),radial-gradient(70% 40% at 0% 100%,rgba(229,9,20,.22),transparent 70%)}
+  .hero .wrap{padding:330px 0 40px}
+  .logo small{display:none}
+  .ep{grid-template-columns:1fr;gap:12px;padding:18px 6px}
+  .ep .n{display:none}
+  .thumb{max-width:none}
+  .two,.awards,.skills{grid-template-columns:1fr}
+  .quote{padding:32px 22px}
+  .subs{bottom:178px}
+  .btn{padding:12px 20px;font-size:15px}
+  .pill span{display:none}
+  .ptime,.pinfo .s{display:none}
+  .prow{gap:6px}
+  .player{padding:10px 12px 12px}
+  .subs{bottom:160px}
+}
+@media (prefers-reduced-motion:reduce){
+  .hero picture img{animation:none}
+  .rv{opacity:1;transform:none;transition:none}
+  html{scroll-behavior:auto}
+}
+@media print{
+  body{background:#fff;color:#111}
+  .nav,.player,.subs,.cta,.hero picture,.thumb,.ep .n,.endcta,footer,.num i{display:none!important}
+  .hero{min-height:0}.hero::before{display:none}.hero .wrap{padding:0}
+  h1{font-size:48px;text-shadow:none;margin:0 0 6px}h1 span{color:#111;-webkit-text-stroke:0}
+  .orig,.meta,.syn,.contact,.ep li,.ep .who,.card p,.aw p,.quote cite,.num span{color:#333!important}
+  .ep h3,.num b,.quote blockquote,.ep li mark{color:#111!important}
+  .ep{grid-template-columns:1fr;padding:8px 0;break-inside:avoid}
+  .card,.aw,.num,.quote,.chip{background:#fff!important;border-color:#ccc!important}
+  .rv{opacity:1!important;transform:none!important}
+  section{padding:16px 0 4px}
+}
+</style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a class="logo" href="#top">LIKHITH<small>DIGITAL RESUME</small></a>
+    <ul>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#education">Education</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#awards">Highlights</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <span class="sp"></span>
+    <a class="pill" href="series/" title="Open the full portfolio">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span>Watch The Series</span>
+    </a>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero chap" data-chap="intro" style="border-radius:0">
+    <picture>
+      <img src="series/assets/hero-wide-1400.webp" srcset="series/assets/hero-wide-800.webp 800w, series/assets/hero-wide-1400.webp 1400w, series/assets/hero-wide-2400.webp 2400w" sizes="100vw" alt="Likhith Rudresh" fetchpriority="high" />
+    </picture>
+    <div class="wrap">
+      <div class="orig"><b>R</b> A RUDRESH ORIGINAL · RESUME</div>
+      <h1>Likhith<span>Rudresh</span></h1>
+      <div class="meta">
+        <span class="new">Open to work</span>
+        <span>Quality &amp; Process Engineer</span><span class="dot"></span>
+        <span>Gothenburg, Sweden</span><span class="dot"></span>
+        <span class="box">SIX SIGMA BLACK BELT</span>
+        <span class="box">MSc CHALMERS</span>
+      </div>
+      <p class="syn">A quality and process engineer who turns messy processes into <em>measurable gains</em>: DMAIC, FMEA-based risk analysis and 8D root-cause investigation in regulated manufacturing.</p>
+      <div class="cta">
+        <button class="btn play" id="playBtn" aria-label="Play the narrated resume">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12.5-7.5z"/></svg>
+          <span id="playLbl">Play resume</span><span class="t">2:11</span>
+        </button>
+        <a class="btn sec" href="series/assets/Likhith_Rudresh_Resume.pdf" download>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-5-5m5 5 5-5M5 21h14"/></svg>
+          Download CV
+        </a>
+        <a class="btn sec" href="#contact">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01" stroke-linecap="round"/></svg>
+          More info
+        </a>
+      </div>
+      <div class="contact">
+        <a href="mailto:rlikhith02@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>rlikhith02@gmail.com</a>
+        <a href="tel:+46727727661"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>+46 727 727 661</a>
+        <a href="https://linkedin.com/in/likhithrudresh" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5M3 9.5h4V21H3zM9.5 9.5h3.8v1.6h.06c.53-1 1.84-2.06 3.79-2.06 4.05 0 4.8 2.67 4.8 6.13V21h-4v-5.1c0-1.22-.02-2.78-1.7-2.78-1.7 0-1.95 1.32-1.95 2.69V21h-4z"/></svg>LinkedIn</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section id="numbers" aria-label="Key results">
+      <div class="sh rv"><span class="k">Top 5</span><h2>Results in numbers</h2><span class="ln"></span></div>
+      <div class="top rv">
+        <div class="num"><i>1</i><div><b>56%</b><span>lead-time cut at Cepheid (20.5 → 9 weeks)</span></div></div>
+        <div class="num"><i>2</i><div><b>67%</b><span>less team workload with KPI dashboards &amp; SOPs</span></div></div>
+        <div class="num"><i>3</i><div><b>6</b><span>failure modes RPN-ranked; framework adopted</span></div></div>
+        <div class="num"><i>4</i><div><b>#1</b><span>of 40+ in the Chalmers Lean Development Game</span></div></div>
+        <div class="num"><i>5</i><div><b>1,000+</b><span>international students onboarded as Phadder Manager</span></div></div>
+      </div>
+    </section>
+
+    <section id="experience">
+      <div class="sh rv"><span class="k">Episodes</span><h2>Experience</h2><span class="ln"></span></div>
+      <div class="eps">
+        <article class="ep chap rv" data-chap="rise">
+          <div class="n">1</div>
+          <div class="thumb" style="--g:linear-gradient(135deg,#2a0610,#7a0f24 55%,#0b0710);--a:#ff3d5a"><span class="badge">LATEST</span><strong>RISE<br/>Fire Research</strong><span class="bar"></span></div>
+          <div>
+            <h3>Student Researcher (Master Thesis)</h3>
+            <div class="who"><span><b>RISE Research Institutes of Sweden</b> · Gothenburg</span><span>Jan 2026 – Jul 2026</span></div>
+            <ul>
+              <li>Structured a <mark>3-phase, 6-month</mark> applied research programme across <mark>5 Stage-Gate milestones</mark> (requirements, technology evaluation, process recommendations), giving stakeholders a decision-ready output at each stage.</li>
+              <li>Produced an FMEA-based risk analysis of <mark>6 RPN-ranked failure modes</mark>, turning findings into prioritised actions and a continuous improvement governance framework <mark>adopted by engineering teams</mark>.</li>
+            </ul>
+            <div class="tags"><span class="tag">FMEA</span><span class="tag">Stage-Gate</span><span class="tag">CTQ / ODD</span><span class="tag">Governance</span><a class="tag" href="https://hdl.handle.net/20.500.12380/312563" target="_blank" rel="noopener">Read thesis ↗</a></div>
+          </div>
+        </article>
+
+        <article class="ep chap rv" data-chap="cepheid">
+          <div class="n">2</div>
+          <div class="thumb" style="--g:linear-gradient(135deg,#1a0d02,#8a4a07 55%,#0a0806);--a:#ffb547"><strong>Cepheid<br/>−56% lead time</strong><span class="bar"></span></div>
+          <div>
+            <h3>Six Sigma DMAIC Lean Process Development, Student Intern</h3>
+            <div class="who"><span><b>Cepheid AB</b> (Student Project) · Stockholm</span><span>Jan 2025 – Aug 2025</span></div>
+            <ul>
+              <li>Applied DMAIC (VSM, cycle-time analysis, waste elimination, OEE monitoring) to a regulated manufacturing line, <mark>reducing lead time 56%</mark> from 20.5 to 9 weeks.</li>
+              <li>Ran 8D-based root-cause validation and an APQP-aligned, PPAP-style checklist, <mark>securing sign-off</mark> before the new SOPs rolled out.</li>
+              <li>Coached the cross-functional team on Lean tools and built KPI dashboards and SOPs in Power BI/Excel, <mark>reducing team workload 67%</mark> and standardising the process across the network.</li>
+            </ul>
+            <div class="tags"><span class="tag">DMAIC</span><span class="tag">VSM</span><span class="tag">OEE</span><span class="tag">8D</span><span class="tag">APQP / PPAP</span><span class="tag">Power BI</span></div>
+          </div>
+        </article>
+
+        <article class="ep chap rv" data-chap="thermax">
+          <div class="n">3</div>
+          <div class="thumb" style="--g:linear-gradient(135deg,#04121f,#0f4c6e 55%,#05080d);--a:#4cc9ff"><strong>Thermax<br/>Shop floor</strong><span class="bar"></span></div>
+          <div>
+            <h3>Manufacturing Quality and Process Intern</h3>
+            <div class="who"><span><b>Thermax Limited KEP</b> · Bengaluru, India</span><span>Feb 2024 – Apr 2024</span></div>
+            <ul>
+              <li>Ran root-cause analysis and production flow mapping, coordinating corrective actions with manufacturing teams per <mark>ISO 9001 / EHS</mark>.</li>
+              <li>Built performance dashboards tracking manufacturing KPIs, capacity utilisation and delivery performance; the process recommendations were <mark>adopted directly by management</mark>.</li>
+            </ul>
+            <div class="tags"><span class="tag">Root Cause Analysis</span><span class="tag">Flow Mapping</span><span class="tag">ISO 9001</span><span class="tag">KPI Dashboards</span></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="education">
+      <div class="sh rv"><span class="k">Origins</span><h2>Education</h2><span class="ln"></span></div>
+      <div class="two rv">
+        <div class="card"><div class="yr">2024 – 2026</div><h3>MSc, Quality and Operations Management</h3><p>Chalmers University of Technology · Gothenburg, Sweden</p><span class="ch">Six Sigma Black Belt</span></div>
+        <div class="card"><div class="yr">2020 – 2024</div><h3>BEng, Mechanical Engineering</h3><p>Global Academy of Technology · India</p><span class="ch">TQM · Manufacturing · Metrology</span></div>
+      </div>
+    </section>
+
+    <section id="skills" class="chap" data-chap="skills" style="padding-inline:0">
+      <div class="sh rv"><span class="k">Cast &amp; crew</span><h2>Skills &amp; tools</h2><span class="ln"></span></div>
+      <div class="skills rv">
+        <div class="sk"><h4>Quality &amp; Governance<small>Risk, standards &amp; control</small></h4><div class="chips"><span class="chip hot">FMEA</span><span class="chip">QMS</span><span class="chip hot">ISO 9001</span><span class="chip">Internal Audits</span><span class="chip">DMAIC &amp; PDCA</span><span class="chip hot">8D</span><span class="chip">APQP / PPAP</span><span class="chip">Process Governance</span></div></div>
+        <div class="sk"><h4>Problem-Solving<small>Finding the real root cause</small></h4><div class="chips"><span class="chip hot">Six Sigma DMAIC</span><span class="chip">Value Stream Mapping</span><span class="chip hot">Root Cause Analysis</span><span class="chip">Statistical Analysis</span><span class="chip">Data-driven Decisions</span></div></div>
+        <div class="sk"><h4>Continuous Improvement<small>Making gains stick</small></h4><div class="chips"><span class="chip hot">Lean Manufacturing</span><span class="chip">OEE Analysis</span><span class="chip">Cycle Time Analysis</span><span class="chip">Kaizen</span><span class="chip">5S</span><span class="chip">Process Standardisation</span></div></div>
+        <div class="sk"><h4>Product Quality<small>Issues, customers &amp; teams</small></h4><div class="chips"><span class="chip">Technical Problem-Solving</span><span class="chip">Customer Deviation Handling</span><span class="chip">Quality Issue Investigation</span><span class="chip">Cross-Functional Collaboration</span></div></div>
+        <div class="sk"><h4>Data &amp; Tools<small>Dashboards, analysis &amp; CAD</small></h4><div class="chips"><span class="chip hot">Power BI</span><span class="chip">Excel (advanced)</span><span class="chip">Python</span><span class="chip">JMP</span><span class="chip">SAP ERP</span><span class="chip">Siemens NX</span><span class="chip">Solid Edge</span><span class="chip">MS Office</span></div></div>
+        <div class="sk"><h4>Languages<small>Spoken</small></h4><div class="chips"><span class="chip">English · Advanced</span><span class="chip">Swedish · Elementary</span></div></div>
+      </div>
+    </section>
+
+    <section id="awards">
+      <div class="sh rv"><span class="k">Awards</span><h2>Highlights &amp; certifications</h2><span class="ln"></span></div>
+      <div class="awards rv">
+        <div class="aw"><span class="ic">BB</span><div><h4>Six Sigma Black Belt</h4><p>Chalmers University of Technology · 2026</p></div></div>
+        <div class="aw"><span class="ic">#1</span><div><h4>No. 1 in Lean Development Game</h4><p>QOM, Chalmers · Nov 2024 · ranked 1st of 40+</p></div></div>
+        <div class="aw"><span class="ic">📄</span><div><h4>Master Thesis Published</h4><p>Operationalizing Physics-Informed Deep Learning in Fire Safety · <a href="https://hdl.handle.net/20.500.12380/312563" target="_blank" rel="noopener">Chalmers repository</a></p></div></div>
+        <div class="aw"><span class="ic">PM</span><div><h4>Phadder Manager (Volunteer)</h4><p>CIRC, Chalmers · 2024 – 2025 · 1,000+ students, 10+ workstreams</p></div></div>
+        <div class="aw"><span class="ic">IS</span><div><h4>Infosys Springboard</h4><p>Expert Project Management (2024) · Supply Chain Management (2023) · Basics of Python (2023)</p></div></div>
+        <div class="aw"><span class="ic">CAD</span><div><h4>CAD</h4><p>NICT Computer Education · 2021</p></div></div>
+      </div>
+    </section>
+
+    <section id="contact" class="chap" data-chap="outro" style="padding-inline:0">
+      <div class="sh rv"><span class="k">Reviews</span><h2>Recommended by</h2><span class="ln"></span></div>
+      <div class="quote rv">
+        <blockquote>A rare combination of strong analytical skills, technical competence, and professional maturity. I recommend him without reservation for early-career roles in manufacturing, operations, process development, or industrial engineering.</blockquote>
+        <cite><b>Johan Anderson</b> · Supervisor, Master Thesis · RISE Research Institutes of Sweden, Fire Research · August 2026</cite>
+        <div class="endcta">
+          <a class="btn play" href="mailto:rlikhith02@gmail.com">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>Get in touch</a>
+          <a class="btn sec" href="series/assets/Likhith_Rudresh_Recommendation_Letter.pdf" target="_blank" rel="noopener">Read the full letter</a>
+          <a class="btn sec" href="series/">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12.5-7.5z"/></svg>Watch The Series</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">Likhith Rudresh · Gothenburg, Sweden · <a href="mailto:rlikhith02@gmail.com">rlikhith02@gmail.com</a> · <a href="https://linkedin.com/in/likhithrudresh" target="_blank" rel="noopener">LinkedIn</a><br/>Narration is an AI voice reading Likhith's own resume. A personal project, not affiliated with any streaming service.</div>
+</footer>
+
+<div class="subs" id="subs" aria-hidden="true"><span id="subTxt"></span></div>
+
+<div class="player" id="player" role="region" aria-label="Resume narration player">
+  <div class="prow">
+    <button class="pbtn" id="prevBtn" aria-label="Previous chapter"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+    <button class="pbtn main" id="ppBtn" aria-label="Pause"><svg viewBox="0 0 24 24" fill="currentColor" id="ppIco"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button>
+    <button class="pbtn" id="nextBtn" aria-label="Next chapter"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button>
+    <div class="pinfo"><div class="c" id="pChap">Chapter 1 · Intro</div><div class="s" id="pSub">Likhith Rudresh · Digital Resume</div></div>
+    <span class="ptime" id="pTime">0:00 / 2:11</span>
+    <button class="pbtn" id="ccBtn" aria-label="Toggle subtitles" aria-pressed="true" title="Subtitles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 10.5a2 2 0 1 0 0 3M17 10.5a2 2 0 1 0 0 3" stroke-linecap="round"/></svg></button>
+    <button class="pbtn" id="xBtn" aria-label="Close player"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="track" id="track" role="slider" aria-label="Seek" tabindex="0" aria-valuemin="0" aria-valuemax="131" aria-valuenow="0">
+    <div class="rail"><div class="fill" id="fill"></div></div>
+    <div class="knob" id="knob"></div>
+  </div>
+  <div class="chaps" id="chaps"></div>
+</div>
+
+<audio id="aud" src="cv/narration.mp3" preload="metadata"></audio>
+
 <script>
-fetch("index.html%20likhith").then(r=>r.text()).then(t=>{document.open();document.write(t);document.close();})
-.catch(()=>{location.href="index.html%20likhith";});
-</script></body></html>
+(()=>{
+const CH=[{"id": "intro", "label": "Intro", "start": 0.0, "text": "Hi, I'm Likhith Rudresh, a quality and process engineer based in Gothenburg, Sweden. I hold an MSc in Quality and Operations Management from Chalmers and a Six Sigma Black Belt, and I specialise in DMAIC, FMEA-based risk analysis and 8D root-cause investigation in regulated manufacturing."}, {"id": "rise", "label": "RISE", "start": 23.14, "text": "Most recently, at RISE Research Institutes of Sweden, I ran my master thesis as a three-phase, six-month programme across five Stage-Gate milestones. My FMEA ranked six failure modes by risk, and the governance framework that came out of it was adopted by the engineering teams."}, {"id": "cepheid", "label": "Cepheid", "start": 44.69, "text": "At Cepheid in Stockholm, I applied Six Sigma DMAIC to a regulated manufacturing line and cut lead time by 56% from 20.5 weeks to nine. I validated root causes with 8D, secured sign-off with an APQP-aligned checklist, and built KPI dashboards that reduced team workload by 67%."}, {"id": "thermax", "label": "Thermax", "start": 69.13, "text": "At Thermax in Bengaluru, I ran root-cause analysis and production flow mapping, coordinated corrective actions under ISO 9001 and EHS, and built KPI dashboards whose recommendations management adopted directly."}, {"id": "skills", "label": "Skills", "start": 87.45, "text": "My toolkit spans FMEA, ISO 9001, 8D, APQP and PPAP, value stream mapping, Lean and OEE, with Power BI, Excel, Python, JMP and SAP ERP for the data. I ranked first of more than forty in the Chalmers Lean Development Game, and I led volunteer teams that onboarded 1,000+ international students."}, {"id": "outro", "label": "Contact", "start": 114.86, "text": "My thesis supervisor at RISE recommends me without reservation. If you're hiring a quality or process engineer, I'd love to talk. Download my CV, or watch the full series to see the projects in 3D."}];
+const DUR=130.8;
+const $=s=>document.querySelector(s);
+const aud=$('#aud'),player=$('#player'),fill=$('#fill'),knob=$('#knob'),track=$('#track'),subs=$('#subs'),subTxt=$('#subTxt');
+let cc=true,cur=-1,userScrollAt=0,started=false;
+
+// nav background
+const nav=$('#nav');
+const onScroll=()=>nav.classList.toggle('solid',scrollY>40);
+addEventListener('scroll',onScroll,{passive:true});onScroll();
+['wheel','touchmove','keydown'].forEach(e=>addEventListener(e,()=>{userScrollAt=Date.now()},{passive:true}));
+
+// reveal
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{rootMargin:'0px 0px -8% 0px'});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+// sentences per chapter, timed by character share
+CH.forEach((c,i)=>{
+  const end=i<CH.length-1?CH[i+1].start:DUR, len=end-c.start-0.6;
+  const parts=c.text.match(/[^.!?]+[.!?]+/g)||[c.text];
+  const total=parts.reduce((a,p)=>a+p.length,0);let t=c.start;
+  c.sents=parts.map(p=>{const s={t,txt:p.trim()};t+=len*p.length/total;return s});
+  c.end=end;
+});
+
+// chapter chips & ticks
+const chapsEl=$('#chaps');
+CH.forEach((c,i)=>{
+  const b=document.createElement('button');b.textContent=(i+1)+'. '+c.label;b.onclick=()=>seek(c.start+0.01);chapsEl.appendChild(b);c.btn=b;
+  if(i){const tk=document.createElement('div');tk.className='tick';tk.style.left=(c.start/DUR*100)+'%';track.appendChild(tk)}
+});
+
+const fmt=s=>{s=Math.max(0,Math.floor(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+const PLAY='<path d="M7 4.5v15l12.5-7.5z"/>',PAUSE='<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
+
+function setChapter(i){
+  if(i===cur)return;cur=i;
+  CH.forEach((c,j)=>{c.btn.classList.toggle('on',j===i)});
+  document.querySelectorAll('.chap').forEach(el=>el.classList.toggle('live',!aud.paused&&CH[i]&&el.dataset.chap===CH[i].id));
+  $('#pChap').textContent='Chapter '+(i+1)+' · '+CH[i].label;
+  const el=document.querySelector('[data-chap="'+CH[i].id+'"]');
+  if(el&&!aud.paused&&Date.now()-userScrollAt>4000){
+    const r=el.getBoundingClientRect();
+    if(CH[i].id==='intro')scrollTo({top:0,behavior:'smooth'});
+    else scrollTo({top:scrollY+r.top-90,behavior:'smooth'});
+  }
+}
+function tick(){
+  const t=aud.currentTime,p=Math.min(1,t/DUR);
+  fill.style.width=knob.style.left=(p*100)+'%';
+  $('#pTime').textContent=fmt(t)+' / '+fmt(DUR);
+  track.setAttribute('aria-valuenow',Math.floor(t));
+  let i=0;CH.forEach((c,j)=>{if(t>=c.start)i=j});
+  setChapter(i);
+  const c=CH[i];
+  // per-episode progress bar on thumbnails
+  document.querySelectorAll('.ep').forEach(ep=>{
+    const ch=CH.find(x=>x.id===ep.dataset.chap);if(!ch)return;
+    const q=Math.max(0,Math.min(1,(t-ch.start)/(ch.end-ch.start)));
+    ep.querySelector('.bar').style.setProperty('--p',(q*100)+'%');
+  });
+  let s=c.sents[0];c.sents.forEach(x=>{if(t>=x.t)s=x});
+  if(subTxt.textContent!==s.txt)subTxt.textContent=s.txt;
+}
+function ui(){
+  const playing=!aud.paused;
+  $('#ppIco').innerHTML=playing?PAUSE:PLAY;$('#ppBtn').setAttribute('aria-label',playing?'Pause':'Play');
+  $('#playLbl').textContent=playing?'Pause resume':(started&&aud.currentTime>0.5&&!aud.ended?'Resume':'Play resume');
+  subs.classList.toggle('on',playing&&cc);
+  document.querySelectorAll('.chap').forEach(el=>el.classList.toggle('live',playing&&CH[cur]&&el.dataset.chap===CH[cur].id));
+}
+function play(){started=true;player.classList.add('on');aud.play().catch(()=>{})}
+function seek(t){aud.currentTime=Math.max(0,Math.min(DUR-0.05,t));userScrollAt=0;cur=-1;tick();if(aud.paused)play()}
+
+$('#playBtn').onclick=()=>aud.paused?play():aud.pause();
+$('#ppBtn').onclick=()=>aud.paused?play():aud.pause();
+$('#prevBtn').onclick=()=>{const t=aud.currentTime;let i=0;CH.forEach((c,j)=>{if(t>=c.start+1.5)i=j});seek(CH[Math.max(0,t-CH[i].start<1.5?i-1:i)].start)};
+$('#nextBtn').onclick=()=>{if(cur<CH.length-1)seek(CH[cur+1].start)};
+$('#ccBtn').onclick=e=>{cc=!cc;e.currentTarget.setAttribute('aria-pressed',cc);e.currentTarget.style.opacity=cc?1:.45;ui()};
+$('#xBtn').onclick=()=>{aud.pause();player.classList.remove('on')};
+aud.addEventListener('timeupdate',tick);
+aud.addEventListener('play',()=>{ui();cur=-1;tick()});
+aud.addEventListener('pause',ui);
+aud.addEventListener('ended',()=>{ui();aud.currentTime=0;started=false;ui()});
+
+// seeking on track
+const seekAt=x=>{const r=track.getBoundingClientRect();seek((x-r.left)/r.width*DUR)};
+track.addEventListener('pointerdown',e=>{seekAt(e.clientX);const mv=ev=>seekAt(ev.clientX);const up=()=>{removeEventListener('pointermove',mv);removeEventListener('pointerup',up)};addEventListener('pointermove',mv);addEventListener('pointerup',up)});
+track.addEventListener('keydown',e=>{if(e.key==='ArrowRight')seek(aud.currentTime+5);if(e.key==='ArrowLeft')seek(aud.currentTime-5)});
+addEventListener('keydown',e=>{if(e.code==='Space'&&player.classList.contains('on')&&!/INPUT|TEXTAREA|BUTTON|A/.test(document.activeElement.tagName)){e.preventDefault();aud.paused?play():aud.pause()}});
+tick();
+})();
+</script>
+</body>
+</html>
